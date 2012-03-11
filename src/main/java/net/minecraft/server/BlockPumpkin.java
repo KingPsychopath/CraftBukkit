@@ -1,6 +1,9 @@
 package net.minecraft.server;
 
-import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
+// CraftBukkit start
+import org.bukkit.craftbukkit.util.BlockStateListPopulator;
+import org.bukkit.event.block.BlockRedstoneEvent;
+// CraftBukkit end
 
 public class BlockPumpkin extends Block {
 
@@ -38,13 +41,20 @@ public class BlockPumpkin extends Block {
         if (world.suppressPhysics) return; // CraftBukkit
         if (world.getTypeId(i, j - 1, k) == Block.SNOW_BLOCK.id && world.getTypeId(i, j - 2, k) == Block.SNOW_BLOCK.id) {
             if (!world.isStatic && world.getServer().getServer().spawnAnimals) { // CraftBukkit - make snowmen obey spawning rules
-                world.setTypeId(i, j, k, 0);
-                world.setTypeId(i, j - 1, k, 0);
-                world.setTypeId(i, j - 2, k, 0);
+                // CraftBukkit start - Use BlockStateListPopulator
+                BlockStateListPopulator blockList = new BlockStateListPopulator(world.getWorld());
+
+                blockList.setTypeId(i, j, k, 0);
+                blockList.setTypeId(i, j - 1, k, 0);
+                blockList.setTypeId(i, j - 2, k, 0);
+
                 EntitySnowman entitysnowman = new EntitySnowman(world);
 
                 entitysnowman.setPositionRotation((double) i + 0.5D, (double) j - 1.95D, (double) k + 0.5D, 0.0F, 0.0F);
-                world.addEntity(entitysnowman, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.BUILD_SNOWMAN); // CraftBukkit
+                if (world.addEntity(entitysnowman, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.BUILD_SNOWMAN)) {
+                    blockList.updateList();
+                }
+                // CraftBukkit end
             }
 
             for (int l = 0; l < 120; ++l) {
