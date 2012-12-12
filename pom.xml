@@ -12,8 +12,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <api.version>unknown</api.version>
     <junit.version>4.11</junit.version>
-    <minecraft.version>1.4.5</minecraft.version>
-    <minecraft_version>1_4_5</minecraft_version>
   </properties>
 
   <scm>
@@ -53,14 +51,14 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>${project.version}</version>
+      <version>1.4.5-R0.3-SNAPSHOT</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>minecraft-server</artifactId>
-      <version>${minecraft.version}</version>
+      <version>1.4.5</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
@@ -101,11 +99,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.1</version>
-    </dependency>
-    <dependency>
       <groupId>org.avaje</groupId>
       <artifactId>ebean</artifactId>
       <version>2.7.3</version>
@@ -135,15 +128,26 @@
     <!-- testing -->
     <dependency>
       <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <artifactId>junit-dep</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>hamcrest-core</artifactId>
+          <groupId>org.hamcrest</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-library</artifactId>
       <version>1.2.1</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.1</version>
     </dependency>
   </dependencies>
 
@@ -221,7 +225,7 @@
               <relocations>
                 <relocation>
                   <pattern>org.bouncycastle</pattern>
-                  <shadedPattern>net.minecraft.v${minecraft_version}.org.bouncycastle</shadedPattern>
+                  <shadedPattern>net.minecraft.org.bouncycastle</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>joptsimple</pattern>
@@ -246,29 +250,23 @@
                 <!-- These contain native libraries, and cannot be properly relocated
                 <relocation>
                   <pattern>org.fusesource</pattern>
-                  <shadedPattern>org.bukkit.craftbukkit.libs.${project.dependencies[4].version}.org.fusesource</shadedPattern>
+                  <shadedPattern>org.bukkit.craftbukkit.libs.org.fusesource</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.sqlite</pattern>
-                  <shadedPattern>org.bukkit.craftbukkit.libs.${project.dependencies[5].version}.org.sqlite</shadedPattern>
+                  <shadedPattern>org.bukkit.craftbukkit.libs.org.sqlite</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.mysql</pattern>
-                  <shadedPattern>org.bukkit.craftbukkit.libs.${project.dependencies[6].version}.com.mysql</shadedPattern>
+                  <shadedPattern>org.bukkit.craftbukkit.libs.com.mysql</shadedPattern>
                 </relocation>
                 !-->
-                <relocation>
-                    <pattern>org.bukkit.craftbukkit</pattern>
-                    <shadedPattern>org.bukkit.craftbukkit.v${minecraft_version}</shadedPattern>
-                    <excludes>
-                        <exclude>org.bukkit.craftbukkit.Main*</exclude>
-                    </excludes>
-                </relocation>
-                <relocation>
-                    <pattern>net.minecraft.server</pattern>
-                    <shadedPattern>net.minecraft.server.v${minecraft_version}</shadedPattern>
-                </relocation>
               </relocations>
+              <artifactSet>
+                <excludes>
+                  <exclude>junit:junit</exclude>
+                </excludes>
+              </artifactSet>
             </configuration>
           </execution>
         </executions>
@@ -324,4 +322,3 @@
     </pluginManagement>
   </build>
 </project>
-
