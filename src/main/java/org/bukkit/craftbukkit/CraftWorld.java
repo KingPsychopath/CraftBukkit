@@ -222,7 +222,7 @@ public class CraftWorld implements World {
     }
 
     public boolean isChunkInUse(int x, int z) {
-        return world.getPlayerManager().isChunkInUse(x, z);
+        return world.getPlayerChunkMap().isChunkInUse(x, z);
     }
 
     public boolean loadChunk(int x, int z, boolean generate) {
@@ -283,8 +283,7 @@ public class CraftWorld implements World {
     public org.bukkit.entity.Item dropItem(Location loc, ItemStack item) {
         Validate.notNull(item, "Cannot drop a Null item.");
         Validate.isTrue(item.getTypeId() != 0, "Cannot drop AIR.");
-        CraftItemStack clone = new CraftItemStack(item);
-        EntityItem entity = new EntityItem(world, loc.getX(), loc.getY(), loc.getZ(), clone.getHandle());
+        EntityItem entity = new EntityItem(world, loc.getX(), loc.getY(), loc.getZ(), CraftItemStack.asNMSCopy(item));
         entity.pickupDelay = 10;
         world.addEntity(entity);
         // TODO this is inconsistent with how Entity.getBukkitEntity() works.
@@ -431,9 +430,9 @@ public class CraftWorld implements World {
         // Forces the client to update to the new time immediately
         for (Player p : getPlayers()) {
             CraftPlayer cp = (CraftPlayer) p;
-            if (cp.getHandle().netServerHandler == null) continue;
+            if (cp.getHandle().playerConnection == null) continue;
 
-            cp.getHandle().netServerHandler.sendPacket(new Packet4UpdateTime(cp.getHandle().world.getTime(), cp.getHandle().getPlayerTime()));
+            cp.getHandle().playerConnection.sendPacket(new Packet4UpdateTime(cp.getHandle().world.getTime(), cp.getHandle().getPlayerTime()));
         }
     }
 
@@ -768,12 +767,12 @@ public class CraftWorld implements World {
         radius *= radius;
 
         for (Player player : getPlayers()) {
-            if (((CraftPlayer) player).getHandle().netServerHandler == null) continue;
+            if (((CraftPlayer) player).getHandle().playerConnection == null) continue;
             if (!location.getWorld().equals(player.getWorld())) continue;
 
             distance = (int) player.getLocation().distanceSquared(location);
             if (distance <= radius) {
-                ((CraftPlayer) player).getHandle().netServerHandler.sendPacket(packet);
+                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
             }
         }
     }

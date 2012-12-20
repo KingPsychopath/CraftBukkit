@@ -15,7 +15,7 @@ public class EntityPigZombie extends EntityZombie {
     public EntityPigZombie(World world) {
         super(world);
         this.texture = "/mob/pigzombie.png";
-        this.bG = 0.5F;
+        this.bH = 0.5F;
         this.fireProof = true;
     }
 
@@ -24,7 +24,7 @@ public class EntityPigZombie extends EntityZombie {
     }
 
     public void j_() {
-        this.bG = this.target != null ? 0.95F : 0.5F;
+        this.bH = this.target != null ? 0.95F : 0.5F;
         if (this.soundDelay > 0 && --this.soundDelay == 0) {
             this.makeSound("mob.zombiepig.zpigangry", this.aX() * 2.0F, ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) * 1.8F);
         }
@@ -117,13 +117,13 @@ public class EntityPigZombie extends EntityZombie {
         int j = this.random.nextInt(2 + i);
 
         if (j > 0) {
-            loot.add(new CraftItemStack(Item.ROTTEN_FLESH.id, j));
+            loot.add(CraftItemStack.asNewCraftStack(Item.ROTTEN_FLESH, j));
         }
 
         j = this.random.nextInt(2 + i);
 
         if (j > 0) {
-            loot.add(new CraftItemStack(Item.GOLD_NUGGET.id, j));
+            loot.add(CraftItemStack.asNewCraftStack(Item.GOLD_NUGGET, j));
         }
 
         // Determine rare item drops and add them to the loot
@@ -133,7 +133,7 @@ public class EntityPigZombie extends EntityZombie {
             if (k < 5) {
                 ItemStack itemstack = this.l(k <= 0 ? 1 : 0);
                 if (itemstack != null) {
-                    loot.add(new CraftItemStack(itemstack));
+                    loot.add(CraftItemStack.asCraftMirror(itemstack));
                 }
             }
         }

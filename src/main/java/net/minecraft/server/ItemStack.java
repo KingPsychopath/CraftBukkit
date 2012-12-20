@@ -41,21 +41,6 @@ public final class ItemStack {
         this.setData(k); // CraftBukkit
     }
 
-    // CraftBukkit start - used to create a new ItemStack, specifying the enchantments at time of creation.
-    public ItemStack(int id, int count, int data, NBTTagList enchantments) {
-        this(id, count, data);
-        // taken from .addEnchantment
-        if (enchantments != null && Item.byId[this.id].getMaxStackSize() == 1) {
-            if (this.tag == null) {
-                this.setTag(new NBTTagCompound());
-            }
-
-            this.tag.set("ench", enchantments.clone()); // modify this part to use passed in enchantments list
-            // TODO Books, Skulls, Item Names, Item Lore
-        }
-    }
-    // CraftBukkit end
-
     public static ItemStack a(NBTTagCompound nbttagcompound) {
         ItemStack itemstack = new ItemStack();
 
@@ -164,9 +149,17 @@ public final class ItemStack {
     public void damage(int i, EntityLiving entityliving) {
         if (this.f()) {
             if (i > 0 && entityliving instanceof EntityHuman) {
-                int j = EnchantmentManager.getDurabilityEnchantmentLevel(entityliving);
+                int j = EnchantmentManager.getEnchantmentLevel(Enchantment.DURABILITY.id, this);
+                int k = 0;
 
-                if (j > 0 && entityliving.world.random.nextInt(j + 1) > 0) {
+                for (int l = 0; j > 0 && l < i; ++l) {
+                    if (EnchantmentDurability.a(this, j, entityliving.world.random)) {
+                        ++k;
+                    }
+                }
+
+                i -= k;
+                if (i <= 0) {
                     return;
                 }
             }
@@ -252,7 +245,7 @@ public final class ItemStack {
     }
 
     public String a() {
-        return Item.byId[this.id].c_(this);
+        return Item.byId[this.id].d(this);
     }
 
     public static ItemStack b(ItemStack itemstack) {
@@ -277,11 +270,11 @@ public final class ItemStack {
     }
 
     public int m() {
-        return this.getItem().a(this);
+        return this.getItem().c_(this);
     }
 
     public EnumAnimation n() {
-        return this.getItem().d_(this);
+        return this.getItem().b_(this);
     }
 
     public void b(World world, EntityHuman entityhuman, int i) {
@@ -305,7 +298,7 @@ public final class ItemStack {
     }
 
     public String r() {
-        String s = this.getItem().j(this);
+        String s = this.getItem().l(this);
 
         if (this.tag != null && this.tag.hasKey("display")) {
             NBTTagCompound nbttagcompound = this.tag.getCompound("display");
@@ -335,7 +328,7 @@ public final class ItemStack {
     }
 
     public boolean v() {
-        return !this.getItem().k(this) ? false : !this.hasEnchantments();
+        return !this.getItem().d_(this) ? false : !this.hasEnchantments();
     }
 
     public void addEnchantment(Enchantment enchantment, int i) {

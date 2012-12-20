@@ -74,11 +74,11 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     }
 
     public ItemStack getItemOnCursor() {
-        return new CraftItemStack(getHandle().inventory.getCarried());
+        return CraftItemStack.asCraftMirror(getHandle().inventory.getCarried());
     }
 
     public void setItemOnCursor(ItemStack item) {
-        net.minecraft.server.ItemStack stack = CraftItemStack.createNMSItemStack(item);
+        net.minecraft.server.ItemStack stack = CraftItemStack.asNMSCopy(item);
         getHandle().inventory.setCarried(stack);
         if (this instanceof CraftPlayer) {
             ((EntityPlayer) getHandle()).broadcastCarriedItem(); // Send set slot for cursor
@@ -229,7 +229,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     }
 
     private void openCustomInventory(Inventory inventory, EntityPlayer player, int windowType) {
-        if (player.netServerHandler == null) return;
+        if (player.playerConnection == null) return;
         Container container = new CraftContainer(inventory, this, player.nextContainerCounter());
 
         container = CraftEventFactory.callInventoryOpenEvent(player, container);
@@ -238,7 +238,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
         String title = container.getBukkitView().getTitle();
         int size = container.getBukkitView().getTopInventory().getSize();
 
-        player.netServerHandler.sendPacket(new Packet100OpenWindow(container.windowId, windowType, title, size));
+        player.playerConnection.sendPacket(new Packet100OpenWindow(container.windowId, windowType, title, size));
         getHandle().activeContainer = container;
         getHandle().activeContainer.addSlotListener(player);
     }
@@ -279,10 +279,10 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
 
     public void openInventory(InventoryView inventory) {
         if (!(getHandle() instanceof EntityPlayer)) return; // TODO: NPC support?
-        if (((EntityPlayer) getHandle()).netServerHandler == null) return;
+        if (((EntityPlayer) getHandle()).playerConnection == null) return;
         if (getHandle().activeContainer != getHandle().defaultContainer) {
             // fire INVENTORY_CLOSE if one already open
-            ((EntityPlayer)getHandle()).netServerHandler.handleContainerClose(new Packet101CloseWindow(getHandle().activeContainer.windowId));
+            ((EntityPlayer)getHandle()).playerConnection.handleContainerClose(new Packet101CloseWindow(getHandle().activeContainer.windowId));
         }
         EntityPlayer player = (EntityPlayer) getHandle();
         Container container;
@@ -303,7 +303,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
         int windowType = CraftContainer.getNotchInventoryType(type);
         String title = inventory.getTitle();
         int size = inventory.getTopInventory().getSize();
-        player.netServerHandler.sendPacket(new Packet100OpenWindow(container.windowId, windowType, title, size));
+        player.playerConnection.sendPacket(new Packet100OpenWindow(container.windowId, windowType, title, size));
         player.activeContainer = container;
         player.activeContainer.addSlotListener(player);
     }

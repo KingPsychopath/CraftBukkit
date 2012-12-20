@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -124,7 +123,7 @@ public class ContainerEnchantTable extends Container {
                     }
 
                     // CraftBukkit start
-                    CraftItemStack item = new CraftItemStack(itemstack);
+                    CraftItemStack item = CraftItemStack.asCraftMirror(itemstack);
                     PrepareItemEnchantEvent event = new PrepareItemEnchantEvent(player, this.getBukkitView(), this.world.getWorld().getBlockAt(this.x, this.y, this.z), item, this.costs, i);
                     this.world.getServer().getPluginManager().callEvent(event);
 
@@ -152,6 +151,7 @@ public class ContainerEnchantTable extends Container {
         if (this.costs[i] > 0 && itemstack != null && (entityhuman.expLevel >= this.costs[i] || entityhuman.abilities.canInstantlyBuild)) {
             if (!this.world.isStatic) {
                 List list = EnchantmentManager.b(this.l, itemstack, this.costs[i]);
+                boolean flag = itemstack.id == Item.BOOK.id;
 
                 if (list != null) {
                     // CraftBukkit start
@@ -160,7 +160,7 @@ public class ContainerEnchantTable extends Container {
                         EnchantmentInstance instance = (EnchantmentInstance) obj;
                         enchants.put(org.bukkit.enchantments.Enchantment.getById(instance.enchantment.id), instance.level);
                     }
-                    CraftItemStack item = new CraftItemStack(itemstack);
+                    CraftItemStack item = CraftItemStack.asCraftMirror(itemstack);
 
                     EnchantItemEvent event = new EnchantItemEvent((Player) entityhuman.getBukkitEntity(), this.getBukkitView(), this.world.getWorld().getBlockAt(this.x, this.y, this.z), item, this.costs[i], enchants, i);
                     this.world.getServer().getPluginManager().callEvent(event);
@@ -170,6 +170,7 @@ public class ContainerEnchantTable extends Container {
                         return false;
                     }
 
+                    // TODO: Apply Diffs
                     entityhuman.levelDown(-level);
                     for (Map.Entry<org.bukkit.enchantments.Enchantment, Integer> entry : event.getEnchantsToAdd().entrySet()) {
                         try {

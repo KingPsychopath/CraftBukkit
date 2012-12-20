@@ -22,7 +22,7 @@ public class CraftInventoryPlayer extends CraftInventory implements org.bukkit.i
     }
 
     public ItemStack getItemInHand() {
-        return new CraftItemStack(getInventory().getItemInHand());
+        return CraftItemStack.asCraftMirror(getInventory().getItemInHand());
     }
 
     public void setItemInHand(ItemStack stack) {
@@ -70,7 +70,7 @@ public class CraftInventoryPlayer extends CraftInventory implements org.bukkit.i
         ItemStack[] ret = new ItemStack[mcItems.length];
 
         for (int i = 0; i < mcItems.length; i++) {
-            ret[i] = new CraftItemStack(mcItems[i]);
+            ret[i] = CraftItemStack.asCraftMirror(mcItems[i]);
         }
         return ret;
     }
@@ -138,11 +138,11 @@ public class CraftInventoryPlayer extends CraftInventory implements org.bukkit.i
         throw new UnsupportedOperationException();
     }
 
-    public float getChestPlateDropChance() {
+    public float getChestplateDropChance() {
         return 1;
     }
 
-    public void setChestPlateDropChance(float chance) {
+    public void setChestplateDropChance(float chance) {
         throw new UnsupportedOperationException();
     }
 
